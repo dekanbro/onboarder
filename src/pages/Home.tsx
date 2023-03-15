@@ -40,7 +40,7 @@ export const Home = () => {
             linkType="external"
             style={{ marginBottom: "2rem" }}
           >
-            Frog docs
+            Frog docs croak
           </Link>{" "}
           and make sure you understand what this is all about.
         </ParMd>
