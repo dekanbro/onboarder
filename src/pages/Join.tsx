@@ -2,11 +2,14 @@ import { useDHConnect } from '@daohaus/connect';
 import { useERC20 } from '../hooks/useERC20';
 import { TARGET_DAO } from '../targetDAO';
 import {
+  Banner,
+  Card,
   DataIndicator,
   Divider,
   H2,
   ParLg,
   ParMd,
+  ParSm,
   SingleColumnLayout,
   Spinner,
   Theme,
@@ -89,13 +92,13 @@ export const Join = () => {
       balanceOf: true,
     },
   });
-  // const { shamanData, isLoading: isShamanLoading } = useOnboarder({
-  //   shamanAddress: TARGET_DAO.SHAMAN_ADDRESS,
-  //   chainId: TARGET_DAO.CHAIN_ID,
-  //   fetchShape: {
-  //     expiry: true,
-  //   },
-  // });
+  const { shamanData, isLoading: isShamanLoading } = useOnboarder({
+    shamanAddress: TARGET_DAO.SHAMAN_ADDRESS,
+    chainId: TARGET_DAO.CHAIN_ID,
+    fetchShape: {
+      expiry: true,
+    },
+  });
   const {
     user,
     isLoading: isUserLoading,
@@ -106,7 +109,7 @@ export const Join = () => {
     memberAddress: address,
   });
   const { isApproved, balance } = tokenData || {};
-  // const { expiry } = shamanData || {};
+  const { expiry } = shamanData || {};
 
   const [isOptimisticApproved, setIsOptimisticApproved] = useState<
     Record<string, boolean>
@@ -209,8 +212,9 @@ export const Join = () => {
   return (
     <SingleColumnLayout>
       <StakeBox>
-        <H2>Join Public Haus</H2>
+        <H2>Join Frog</H2>
         <ParLg>Stake {TARGET_DAO.STAKE_TOKEN_SYMBOL} to Join</ParLg>
+        <ParSm>You can get up to 100 shares all further stake is represented as LOOT</ParSm>
         <DataGrid>
           <DataIndicator
             label="Stake Token:"
@@ -218,16 +222,32 @@ export const Join = () => {
             size="sm"
           />
           <DataIndicator label="Stake Ratio:" data={`1:10`} size="sm" />
+
+          <DataIndicator
+            label="Stake Shares Cap:"
+            data={'1000'}
+            size="sm"
+          />
+
+          {expiry && <ExpiryIndicator expiry={expiry} />}
+
         </DataGrid>
         <Divider className="space" />
         <MembershipSection user={user as Member | null} balance={balance} />
-        <StakeTokenSection
+        {TARGET_DAO.STAKE_PAUSED ? (
+          <Card className="space">
+              <ParMd>
+                Staking is currently paused. Please check back later.
+              </ParMd>
+          </Card>
+
+        ):(<StakeTokenSection
           balance={balance}
           isApproved={isApproved || userOptimisticApproved}
           handleApprove={handleApprove}
           handleStake={handleStake}
           isLoading={isLoadingTx || isRefetching}
-        />
+        />)}
       </StakeBox>
     </SingleColumnLayout>
   );
@@ -235,5 +255,5 @@ export const Join = () => {
 
 const ExpiryIndicator = ({ expiry }: { expiry: string }) => {
   const expiryDate = formatDistanceToNowFromSeconds(expiry);
-  return <DataIndicator label="Expires:" data={expiryDate} size="sm" />;
+  return <DataIndicator label="Open Staking Expires:" data={expiryDate} size="sm" />;
 };
